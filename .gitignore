@@ -1,8 +1,8 @@
 build/
-.gradle
-.gradletasknamecache
 .idea/
 *.ipr
 *.iws
 out/
 *.iml
+project
+target
