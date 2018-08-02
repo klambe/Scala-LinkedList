@@ -4,13 +4,13 @@ package project
 * create a simple linked list if scala with head, tail and add method
 */
 
-abstract class MyList {
+abstract class MyList[+A] {
 
-  def add(element: Int): MyList
+  def add[B >: A](element: B): MyList[B]
 
-  def head: Int
+  def head: A
 
-  def tail: MyList
+  def tail: MyList[A]
 
   def isEmpty: Boolean
 
@@ -20,13 +20,13 @@ abstract class MyList {
 
 }
 
-object Empty extends MyList {
+object Empty extends MyList[Nothing] {
 
-  def add(element: Int): MyList = new Cons(element, Empty)
+  def add[B >: Nothing](element: B): MyList[B] = new Cons(element, Empty)
 
-  def head: Int = throw new NoSuchElementException
+  def head: Nothing = throw new NoSuchElementException
 
-  def tail: MyList = throw new NoSuchElementException
+  def tail: MyList[Nothing] = throw new NoSuchElementException
 
   def isEmpty: Boolean = true
 
@@ -34,13 +34,13 @@ object Empty extends MyList {
 }
 
 
-class Cons(h: Int, t: MyList) extends MyList {
+class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
 
-  def add(element: Int): MyList = new Cons(element, this)
+  def add[B >: A](element: B): MyList[B] = new Cons(element, this)
 
-  def head: Int = h
+  def head: A = h
 
-  def tail: MyList = t
+  def tail: MyList[A] = t
 
   def isEmpty: Boolean = false
 
@@ -49,15 +49,3 @@ class Cons(h: Int, t: MyList) extends MyList {
     else h + " " + t.printElements
 }
 
-object ListTest extends App {
-
-  val list = new Cons(1, new Cons(2, new Cons(3, Empty)))
-
-  println(list.tail.head)
-
-  println(list.add(4).head)
-  println(list.isEmpty)
-
-  println(list.toString)
-
-}
