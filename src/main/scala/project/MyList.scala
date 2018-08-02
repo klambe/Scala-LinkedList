@@ -27,7 +27,7 @@ abstract class MyList[+A] {
 
 }
 
-object Empty extends MyList[Nothing] {
+case object Empty extends MyList[Nothing] {
 
   def add[B >: Nothing](element: B): MyList[B] = new Cons(element, Empty)
 
@@ -47,7 +47,7 @@ object Empty extends MyList[Nothing] {
 }
 
 
-class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
+case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
 
   def add[B >: A](element: B): MyList[B] = new Cons(element, this)
 
