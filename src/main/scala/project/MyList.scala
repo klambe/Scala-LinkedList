@@ -2,6 +2,8 @@ package project
 
 /*
 * create a simple linked list if scala with head, tail and add method
+* Add generic support for all data types
+* use Higher order functions
 */
 
 abstract class MyList[+A] {
@@ -18,12 +20,13 @@ abstract class MyList[+A] {
 
   override def toString: String = "[" + printElements + "]"
 
-  def map[B](myTransformer: MyTransformer[A, B]): MyList[B]
+  def map[B](myTransformer: A => B): MyList[B]
 
-  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B]
-  def filter(predicate: MyPredicate[A]): MyList[A]
+  def flatMap[B](transformer: A => MyList[B]): MyList[B]
 
-  def ++[B>:A](list:MyList[B]):MyList[B]
+  def filter(predicate: A => Boolean): MyList[A]
+
+  def ++[B >: A](list: MyList[B]): MyList[B]
 
 }
 
@@ -39,11 +42,13 @@ case object Empty extends MyList[Nothing] {
 
   def printElements: String = ""
 
-  override def map[B](myTransformer: MyTransformer[Nothing, B]): MyList[Nothing] = Empty
+  override def map[B](myTransformer: Nothing => B): MyList[Nothing] = Empty
 
-  def flatMap[B](transformer: MyTransformer[Nothing, MyList[B]]): MyList[B] = Empty
-  def filter(predicate: MyPredicate[Nothing]): MyList[Nothing] = Empty
-  def ++[B>:Nothing](list:MyList[B]):MyList[B] = list
+  def flatMap[B](transformer: Nothing => MyList[B]): MyList[B] = Empty
+
+  def filter(predicate: Nothing => Boolean): MyList[Nothing] = Empty
+
+  def ++[B >: Nothing](list: MyList[B]): MyList[B] = list
 }
 
 
@@ -61,18 +66,18 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
     if (t.isEmpty) "" + h
     else h + " " + t.printElements
 
-  def map[B](myTransformer: MyTransformer[A, B]): MyList[B] =
-    new Cons(myTransformer.transform(h), t.map(myTransformer))
+  def map[B](myTransformer: A => B): MyList[B] =
+    new Cons(myTransformer(h), t.map(myTransformer))
 
 
-  def filter(predicate: MyPredicate[A]): MyList[A] =
-    if (predicate.test(h)) new Cons(h, t.filter(predicate))
+  def filter(predicate: A => Boolean): MyList[A] =
+    if (predicate(h)) new Cons(h, t.filter(predicate))
     else t.filter(predicate)
 
-  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B] =
-    transformer.transform(h) ++ t.flatMap(transformer)
+  def flatMap[B](transformer: A => MyList[B]): MyList[B] =
+    transformer(h) ++ t.flatMap(transformer)
 
-  def ++[B>:A](list:MyList[B]):MyList[B] = new Cons(h, t ++ list)
+  def ++[B >: A](list: MyList[B]): MyList[B] = new Cons(h, t ++ list)
 
 }
 
